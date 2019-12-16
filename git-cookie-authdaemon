@@ -22,6 +22,8 @@ Runs only on Google Compute Engine (GCE). On GCE Windows '--nofork' option
 is needed. '--debug' option is available.
 """
 
+from __future__ import print_function
+
 import atexit
 import contextlib
 import cookielib
@@ -85,7 +87,7 @@ def configure_git():
 
   COOKIE_JAR = os.path.join(dir, 'cookie')
   if '--debug' in sys.argv:
-    print 'Cookie file: %s' % COOKIE_JAR
+    print('Cookie file: %s' % COOKIE_JAR)
 
   if os.path.exists(dir):
     os.chmod(dir, 0700)
@@ -136,9 +138,9 @@ def update_cookie(scope, retry):
 
   cj.save()
   if '--debug' in sys.argv:
-    print 'Updating %s.' % COOKIE_JAR
-    print 'Expires: %d, %s, in %d seconds'% (
-      expires, time.ctime(expires), expires - now)
+    print('Updating %s.' % COOKIE_JAR)
+    print('Expires: %d, %s, in %d seconds'% (
+      expires, time.ctime(expires), expires - now))
     sys.stdout.flush()
   if IS_WINDOWS:
     # os.rename() below on Windows will raise OSError when dst exists.
@@ -186,7 +188,7 @@ def main():
 
     pid = os.fork()
     if pid > 0:
-      print 'git-cookie-authdaemon PID %d' % (pid)
+      print('git-cookie-authdaemon PID %d' % (pid))
       sys.exit(0)
 
   refresh_loop(scope, expires)

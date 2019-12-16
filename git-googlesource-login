@@ -20,6 +20,8 @@ Adds a cookie to ~/.git-credential-cache/cookies and sets
 Git variable http.cookiefile to this path.
 """
 
+from __future__ import print_function
+
 import cookielib
 import os
 from subprocess import Popen, PIPE, check_call
@@ -69,10 +71,10 @@ def write_cookie(token):
   return cj.filename
 
 def main():
-  print 'Open https://www.googlesource.com/new-password ...'
+  print('Open https://www.googlesource.com/new-password ...')
   t = raw_input("Password (under 'Login for Git'): ")
   p = write_cookie(t)
-  print "Saved to %s" % (p,)
+  print("Saved to %s" % (p,))
 
 if __name__ == '__main__':
   main()
