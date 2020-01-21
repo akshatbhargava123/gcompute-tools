@@ -40,9 +40,9 @@ def write_cookie(token):
 
   dir = os.path.dirname(fn)
   if os.path.exists(dir):
-    os.chmod(dir, 0700)
+    os.chmod(dir, 0o700)
   else:
-    os.mkdir(dir, 0700)
+    os.mkdir(dir, 0o700)
 
   cj = cookielib.MozillaCookieJar(fn)
   if os.path.exists(cj.filename):
@@ -65,7 +65,7 @@ def write_cookie(token):
     comment_url = None,
     rest = None))
   cj.save()
-  os.chmod(cj.filename, 0600)
+  os.chmod(cj.filename, 0o600)
   if set_config:
     check_call(git_config + [cj.filename])
   return cj.filename
