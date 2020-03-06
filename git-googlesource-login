@@ -22,15 +22,30 @@ Git variable http.cookiefile to this path.
 
 from __future__ import print_function
 
-import cookielib
 import os
 from subprocess import Popen, PIPE, check_call
+import sys
+
+if sys.version_info[0] > 2:
+  # Python 3 imports
+  import http.cookiejar as cookielib
+else:
+  # Python 2 imports
+  import cookielib
+
+try:
+  # We want to use raw_input in Python 2.
+  input = raw_input
+except NameError:
+  # raw_input does not exist in in Python 3 and has been
+  # renamed to input.
+  pass
 
 def write_cookie(token):
   git_config = ['git', 'config', '--global', 'http.cookiefile']
   set_config = False
 
-  fn = Popen(git_config, stdout=PIPE).communicate()[0]
+  fn = Popen(git_config, stdout=PIPE).communicate()[0].decode('utf-8')
   if fn == '':
     home = os.environ['HOME']
     fn = os.path.join(home, '.git-credential-cache', 'cookies')
@@ -72,7 +87,7 @@ def write_cookie(token):
 
 def main():
   print('Open https://www.googlesource.com/new-password ...')
-  t = raw_input("Password (under 'Login for Git'): ")
+  t = input("Password (under 'Login for Git'): ")
   p = write_cookie(t)
   print("Saved to %s" % (p,))
 

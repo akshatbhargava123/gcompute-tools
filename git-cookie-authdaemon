@@ -26,14 +26,23 @@ from __future__ import print_function
 
 import atexit
 import contextlib
-import cookielib
 import json
 import os
 import platform
 import subprocess
 import sys
 import time
-import urllib2
+
+if sys.version_info[0] > 2:
+  # Python 3 imports
+  from urllib.request import urlopen, Request
+  from urllib.error import URLError
+  from urllib.error import HTTPError
+  import http.cookiejar as cookielib
+else:
+  # Python 2 imports
+  from urllib2 import urlopen, Request, HTTPError, URLError
+  import cookielib
 
 REFRESH = 25  # seconds remaining when starting refresh
 RETRY_INTERVAL = 5 # seconds between retrying a failed refresh
@@ -50,16 +59,16 @@ COOKIE_JAR = None
 IS_WINDOWS = platform.system() == 'Windows'
 
 def read_meta(part):
-  r = urllib2.Request(META_URL + part)
+  r = Request(META_URL + part)
   r.add_header('Metadata-Flavor', 'Google')
-  return contextlib.closing(urllib2.urlopen(r))
+  return contextlib.closing(urlopen(r))
 
 def select_scope():
   with read_meta('scopes') as d:
-    avail = set(d.read().split())
+    avail = set(map(lambda s: s.decode('utf-8'), d.read().split()))
   scopes = [s for s in SUPPORTED_SCOPES if s in avail]
   if scopes:
-    return iter(scopes).next()
+    return next(iter(scopes))
   sys.stderr.write('error: VM must have one of these scopes:\n\n')
   for s in SUPPORTED_SCOPES:
     sys.stderr.write('  %s\n' % (s))
@@ -103,7 +112,7 @@ def acquire_token(scope, retry):
     try:
       with read_meta('token?scopes=' + scope) as d:
         return json.load(d)
-    except urllib2.URLError:
+    except URLError:
       if not retry:
         raise
     time.sleep(RETRY_INTERVAL)
