@@ -84,7 +84,7 @@ def configure_git():
     # Set cookie file as %HOMEPATH%/.git-credential-cache/cookie,
     # so it can be used in both cases.
     if 'HOMEPATH' in os.environ:
-      homepath = os.environ['HOMEPATH']
+      homepath = os.path.join(os.environ.get('HOMEDRIVE'), os.environ['HOMEPATH'])
     else:
       # When launched as a scheduled task at machine startup
       # HOMEPATH may not be set.
