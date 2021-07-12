@@ -78,11 +78,17 @@ ps -ef | grep git-cookie-authdaemon
 
 ## Installation on Windows
 
-1. Install [Python](https://www.python.org/downloads/windows/) and
+### Prerequisite
+
+Install [Python 2.7](https://www.python.org/downloads/windows/) and
    [Git](https://git-scm.com/download) for Windows.
-1. Run `git-cookie-authdaemon` in the same environment under the same user
-   git commands will be run, for example in either `Command Prompt`
-   or `Cygwin bash shell` under user `builder`.
+
+### Run interactively or in a build script
+
+Run `git-cookie-authdaemon` in the same environment under the same user
+git commands will be run, for example in either `Command Prompt`
+or `Cygwin bash shell` under user `builder`. In Windows `Command Prompt`
+`start` can be used to put the process into background.
 ```
 python git-cookie-authdaemon --nofork
 ```
@@ -91,11 +97,12 @@ python git-cookie-authdaemon --nofork
 
 It may be desired in automation to launch `git-cookie-authdaemon` at
 Windows boot. It can be done as a scheduled task. The following is an
-example on a Jenkins node. The setup is:
+example on a Jenkins node:
 
-1. The VM is created from GCE Windows Server 2012R2 image.
-1. Gygwin with SSHD is installed.
-1. The Jenkins master connects to the VM through SSH as `builder` account.
+1. The VM is created from GCE Windows Server 2019 or 2012R2 image.
+1. It runs under `builder` account.
+1. It is launched from a Bash shell. Cygwin is used here. Msys2 or Git
+   Bash may work too but not tested.
 
 How to create a scheduled task.
 
@@ -120,18 +127,16 @@ How to create a scheduled task.
 1. Add `builder` account to `Administrative Tools -> Local Security Policy ->
    Local Policies -> User Rights Assignment -> Log On As Batch Job`
 
-Note: /home/builder/git-cookie-authdaemon_wrapper.sh` below does
-
-1. Set HOMEPATH if it is not.
-2. Capture git-cookie-autodaemon.log stdout and stderr for debugging.
+Note: `/home/builder/git-cookie-authdaemon_wrapper.sh` is as below:
 
 ```
 #!/bin/bash
 exe=gcompute-tools/git-cookie-authdaemon
 log=/cygdrive/c/build/git-cookie-autodaemon.log
 
-# HOMEPATH is not set in task scheduled at machine boot.
+# HOMEPATH and HOMEDRIVE are not set in a task scheduled at machine boot.
 export HOMEPATH=${HOMEPATH:-'\Users\builder'}
+export HOMEDRIVE=${HOMEDRIVE:-'C:'}
 
-/cygdrive/c/Python27/python $exe --nofork >> $log 2>&1 # option --debug is also available.
+/cygdrive/c/Python27/python $exe --nofork >> $log 2>&1 # option "--debug" is also available.
 ```
