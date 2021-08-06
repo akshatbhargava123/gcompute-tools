@@ -80,8 +80,9 @@ ps -ef | grep git-cookie-authdaemon
 
 ### Prerequisite
 
-Install [Python 2.7](https://www.python.org/downloads/windows/) and
-   [Git](https://git-scm.com/download) for Windows.
+Install [Python 3.9](https://www.python.org/downloads/windows/) and
+   [Git](https://git-scm.com/download) for Windows. Older Python3 versions
+ will probably work but are not tested in the setup below.
 
 ### Run interactively or in a build script
 
@@ -103,6 +104,8 @@ example on a Jenkins node:
 1. It runs under `builder` account.
 1. It is launched from a Bash shell. Cygwin is used here. Msys2 or Git
    Bash may work too but not tested.
+1. C:\build exists (log file destination in wrapper script used below
+   - adjust as needed)
 
 How to create a scheduled task.
 
@@ -138,5 +141,18 @@ log=/cygdrive/c/build/git-cookie-autodaemon.log
 export HOMEPATH=${HOMEPATH:-'\Users\builder'}
 export HOMEDRIVE=${HOMEDRIVE:-'C:'}
 
-/cygdrive/c/Python27/python $exe --nofork >> $log 2>&1 # option "--debug" is also available.
+/cygdrive/c/Users/builder/AppData/Local/Programs/Python/Python39/python $exe --nofork >> $log 2>&1 # option --debug is also available.
+```
+
+This will write a log file to "C:\build\git-cookie-autodaemon.log"
+and a cookie to "C:\Users\builder\.git-credential-cache\cookie". The cookie is
+used for authentication by the user's gitconfig as shown below. The wrapper
+script assumes Python 3.9 is installed to the default location of
+"%LOCALAPPDATA%\Programs\Python\Python39"
+
+C:\Users\builder\.gitconfig contains the following section
+
+```
+[http]
+        cookiefile = C:\\Users\\builder\\.git-credential-cache\\cookie
 ```
