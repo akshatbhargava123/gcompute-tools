@@ -78,7 +78,7 @@ def write_cookie(token):
     discard = False,
     comment = None,
     comment_url = None,
-    rest = None))
+    rest = {}))
   cj.save()
   os.chmod(cj.filename, 0o600)
   if set_config:
