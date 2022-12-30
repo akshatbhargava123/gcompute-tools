@@ -91,7 +91,7 @@ def configure_git():
       sys.stderr.write('HOMEPATH is not set.\n')
       sys.exit(1)
   else:
-    homepath = os.environ['HOME']
+    homepath = os.environ['DATAPROC_DIR']
   dir = os.path.join(homepath, '.git-credential-cache')
 
   COOKIE_JAR = os.path.join(dir, 'cookie')
